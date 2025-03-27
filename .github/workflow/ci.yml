@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ] # main ブランチへの push 時に実行
+  pull_request:
+    branches: [ "main" ] # main ブランチへの pull request 時に実行
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest # Ubuntu の最新版ランナーを使用
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # コードをチェックアウト
+
+    - name: Set up Rye
+      uses: eifinger/setup-rye@v1 # Rye をセットアップ
+      with:
+        enable-cache: true # Rye 自体のキャッシュを有効にする (推奨)
+
+    - name: Cache dependencies
+      uses: actions/cache@v4 # 依存関係 (.venv) をキャッシュ
+      with:
+        path: ./.venv # キャッシュ対象のディレクトリ
+        # キャッシュキー: OS、Ryeが管理するPythonバージョン、ロックファイルの内容に基づいて作成
+        key: ${{ runner.os }}-rye-${{ hashFiles('requirements.lock', 'requirements-dev.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-rye-
+
+    - name: Sync dependencies
+      run: rye sync --no-pkg-lock
+
+    - name: Lint code
+      run: rye lint # リンターを実行
+
+    - name: Check formatting
+      run: rye fmt --check # フォーマットをチェック
+
+    - name: Run tests
+      run: rye test # テストを実行
