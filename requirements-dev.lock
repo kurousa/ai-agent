@@ -47,6 +47,7 @@ click==8.1.8
     # via streamlit
 colorama==0.4.6
     # via click
+    # via pytest
     # via tqdm
 dataclasses-json==0.6.7
     # via langchain
@@ -115,6 +116,8 @@ idna==3.10
     # via httpx
     # via requests
     # via yarl
+iniconfig==2.1.0
+    # via pytest
 jinja2==3.1.6
     # via altair
     # via pydeck
@@ -183,11 +186,14 @@ packaging==23.2
     # via huggingface-hub
     # via langchain-core
     # via marshmallow
+    # via pytest
     # via streamlit
 pandas==2.2.3
     # via streamlit
 pillow==10.4.0
     # via streamlit
+pluggy==1.5.0
+    # via pytest
 propcache==0.3.1
     # via aiohttp
     # via yarl
@@ -224,6 +230,7 @@ pygments==2.19.1
     # via rich
 pyparsing==3.2.3
     # via httplib2
+pytest==8.3.5
 python-dateutil==2.9.0.post0
     # via pandas
 python-dotenv==1.0.0
