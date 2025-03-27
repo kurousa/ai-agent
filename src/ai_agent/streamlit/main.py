@@ -5,6 +5,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
     # [debug]check envs
     # import os
@@ -13,12 +14,17 @@ try:
     #   print(f"{key}={value}")
 except ImportError:
     import warnings
-    warnings.warn("dotenv not found. Please make sure to set your environment variables manually.", ImportWarning)
+
+    warnings.warn(
+        "dotenv not found. Please make sure to set your environment variables manually.",
+        ImportWarning,
+    )
+
 
 def main():
     st.set_page_config(
         page_title="My ChatGPT",
-        page_icon= "🤖",
+        page_icon="🤖",
     )
     st.header("My ChatGPT")
 
@@ -29,10 +35,12 @@ def main():
 
     llm = ChatOpenAI(temperature=0)
 
-    prompt = ChatPromptTemplate.from_messages([
-        *st.session_state.message_history,
-        ("user", "{user_input}"),
-    ])
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            *st.session_state.message_history,
+            ("user", "{user_input}"),
+        ]
+    )
 
     output_parser = StrOutputParser()
 
@@ -48,6 +56,7 @@ def main():
 
     for role, message in st.session_state.get("message_history", []):
         st.chat_message(role).markdown(message)
+
 
 if __name__ == "__main__":
     main()
