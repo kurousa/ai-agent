@@ -13,3 +13,7 @@ Prepare for api tokens each services on to `env` file and place to project root 
 
 There loads by `python-dotenv`.
 
+## Usage
+
+- Run ChatApp
+  - `rye run chat`
