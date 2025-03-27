@@ -36,6 +36,13 @@ dev-dependencies = [
 [tool.rye.scripts]
 streamlit = "streamlit"
 chat = "streamlit run src/ai_agent/streamlit/main.py"
+# NOTE: テストコードがないため、pytestをCIで実行するとエラーとなるための緩和策
+#
+# pytest を実行し、もし失敗したら($? が非ゼロ)、その終了コードが 5 かどうかチェックする。
+# 5 ならば [ $? -eq 5 ] が成功 (終了コード 0) する。
+# 5 以外で失敗した場合は [ $? -eq 5 ] が失敗 (非ゼロ) するので、エラーが伝わる。
+# pytest が成功 (0) した場合は || 以降は実行されない。
+test = "pytest || [ $? -eq 5 ]"
 
 [tool.hatch.metadata]
 allow-direct-references = true
