@@ -43,7 +43,7 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/ai_agent"]
 
-[tool.ruff.lint]
+[tool.ruff]
 exclude = [
     ".bzr",
     ".direnv",
@@ -61,7 +61,7 @@ exclude = [
     ".ruff_cache",
     ".svn",
     ".tox",
-    ".venv", # .venv も含めるのが一般的
+    ".venv",
     "__pypackages__",
     "_build",
     "buck-out",
