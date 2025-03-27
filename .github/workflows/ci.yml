@@ -38,4 +38,4 @@ jobs:
       run: rye fmt --check # フォーマットをチェック
 
     - name: Run tests
-      run: rye test # テストを実行
+      run: rye run test # テストを実行
