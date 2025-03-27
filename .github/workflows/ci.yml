@@ -29,10 +29,10 @@ jobs:
           ${{ runner.os }}-rye-
 
     - name: Sync dependencies
-      run: rye sync --no-pkg-lock
+      run: rye sync --no-lock
 
     - name: Lint code
-      run: rye lint # リンターを実行
+      run: rye lint --quiet --pyproject pyproject.toml # リンターを実行
 
     - name: Check formatting
       run: rye fmt --check # フォーマットをチェック
