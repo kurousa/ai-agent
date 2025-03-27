@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ] # main ブランチへの push 時に実行
+    branches: [ "master" ] # master ブランチへの push 時に実行
   pull_request:
-    branches: [ "main" ] # main ブランチへの pull request 時に実行
+    branches: [ "master" ] # master ブランチへの pull request 時に実行
 
 jobs:
   ci:
