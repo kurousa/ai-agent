@@ -29,7 +29,9 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = []
+dev-dependencies = [
+    "pytest>=8.3.5",
+]
 
 [tool.rye.scripts]
 streamlit = "streamlit"
