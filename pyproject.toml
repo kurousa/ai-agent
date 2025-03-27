@@ -32,8 +32,8 @@ managed = true
 dev-dependencies = []
 
 [tool.rye.scripts]
-main = "python src/ai_agent/main.py"
 streamlit = "streamlit"
+chat = "streamlit run src/ai_agent/streamlit/main.py"
 
 [tool.hatch.metadata]
 allow-direct-references = true
