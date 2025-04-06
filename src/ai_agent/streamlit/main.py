@@ -29,12 +29,14 @@ MODEL_PRICE = {
     "input": {
         "gpt-3.5-turbo": 0.5 / PER_1_000_000_TOKENS,
         "gpt-4o": 5 / PER_1_000_000_TOKENS,
-        "gemini-1.5-flash-latest": 0.125 / PER_1_000_000_TOKENS
+        "gemini-1.5-flash-latest": 0.125 / PER_1_000_000_TOKENS,
+        "claude-3-5-haiku-20241022": 3 / PER_1_000_000_TOKENS
     },
     "output": {
         "gpt-3.5-turbo": 1.5 / PER_1_000_000_TOKENS,
         "gpt-4o": 15 / PER_1_000_000_TOKENS,
-        "gemini-1.5-flash-latest": 0.375 / PER_1_000_000_TOKENS
+        "gemini-1.5-flash-latest": 0.375 / PER_1_000_000_TOKENS,
+        "claude-3-5-haiku-20241022": 15 / PER_1_000_000_TOKENS
     }
 }
 GEMINI_PRICE_THRESHOLD_TOKENS = 128_000 # 128kトークン以上の場合、単価が変わるため
@@ -47,7 +49,7 @@ def get_message_counts(text):
             encoding = tiktoken.encoding_for_model(st.session_state.model_name)
         else:
             #NOTE: Claudeはトークン数を取得する方法が不明なため、1トークン=1文字として計算
-            encoding = tiktoken.get_encoding("gpt-3.5-turbo") # dummy
+            encoding = tiktoken.get_encoding("cl100k_base") # GPT models use cl100k_base encoding
             print("警告: Claude トークンの計算は近似値です。")
         return len(encoding.encode(text))
 
@@ -98,7 +100,7 @@ def select_model():
     models = (
         "Open AI GPT-3.5-turbo",
         "Open AI GPT-4o",
-        # "Claude 3.5 Haiku",
+        "Claude 3.5 Haiku",
         # "Claude 3.7 Sonnet",
         "Google Gemini 1.5 Flash",
         # "Gemini 2.0 Flash"
@@ -112,9 +114,9 @@ def select_model():
         case "Open AI GPT-4o":
             st.session_state.model_name = "gpt-4o"
             return ChatOpenAI(model=st.session_state.model_name, temperature=temperature)
-        # case "Claude 3.5 Haiku":
-        #     st.session_state.model_name = "claude-3-5-haiku-20241022"
-        #     return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
+        case "Claude 3.5 Haiku":
+            st.session_state.model_name = "claude-3-5-haiku-20241022"
+            return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
         # case "Claude 3.7 Sonnet":
         #     st.session_state.model_name = "claude-3-7-sonnet-20250219"
         #     return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
