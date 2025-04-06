@@ -92,9 +92,16 @@ def main():
 
     chain = prompt | llm | output_parser
 
+    # メッセージ履歴を出力
+    for role, message in st.session_state.get("message_history", []):
+        st.chat_message(role).markdown(message)
+
+    # ユーザーから入力があった場合、streamにて回答を表示し、履歴に記録
     if user_input := st.chat_input("Ask me anything"):
-        with st.spinner("Thinking..."):
-            response = chain.invoke({"{user_input}", user_input})
+        st.chat_message("user").markdown(user_input)
+
+        with st.chat_message("ai"):
+            response = st.write_stream(chain.stream({"user_input": user_input}))
 
         st.session_state.message_history.append(("user", user_input))
 
