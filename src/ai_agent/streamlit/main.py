@@ -20,6 +20,34 @@ except ImportError:
         ImportWarning,
     )
 
+def select_model():
+    """利用するLLMをサイドバーの選択状態によって切り替える"""
+    temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
+    models = ("GPT-3.5", "GPT-4", "Claude", "Gemini")
+    model = st.sidebar.radio("Choose a model:", models)
+
+    match model:
+        case "GPT-3.5":
+            st.session_state.model_name = "gpt-3.5-turbo"
+        case "GPT-4":
+            st.session_state.model_name = "gpt-4o"
+        # case "Claude":
+        #     return ChatOpenAI(model="claude", temperature=temperature)
+        # case "Gemini":
+        #     return ChatOpenAI(model="gemini", temperature=temperature)
+        case _:
+            raise ValueError("Invalid model selected.")
+
+    return ChatOpenAI(model=st.session_state.model_name, temperature=temperature)
+
+def init_messages():
+    """会話履歴の消去"""
+    clear_button = st.sidebar.button("Clear Conversation", key="clear")
+    if clear_button or "message_history" not in st.session_state:
+        st.session_state.message_history = [
+            ("system", "You are a helpful assistant."),
+        ]
+
 
 def main():
     st.set_page_config(
