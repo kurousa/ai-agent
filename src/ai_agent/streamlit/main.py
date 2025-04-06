@@ -37,7 +37,7 @@ MODEL_PRICE = {
         "gemini-1.5-flash-latest": 0.375 / PER_1_000_000_TOKENS
     }
 }
-THRESHOLD_OF_GEMINI_PRICE = 128_000 # 128kトークン以上の場合、単価が変わるため
+GEMINI_PRICE_THRESHOLD_TOKENS = 128_000 # 128kトークン以上の場合、単価が変わるため
 
 def get_message_counts(text):
     if "gemini" in st.session_state.model_name:
@@ -48,6 +48,7 @@ def get_message_counts(text):
         else:
             #NOTE: Claudeはトークン数を取得する方法が不明なため、1トークン=1文字として計算
             encoding = tiktoken.get_encoding("gpt-3.5-turbo") # dummy
+            print("警告: Claude トークンの計算は近似値です。")
         return len(encoding.encode(text))
 
 def calc_cost():
@@ -71,7 +72,7 @@ def calc_cost():
     output_cost = MODEL_PRICE["output"][st.session_state.model_name] * output_count
     if (
         "gemini" in st.session_state.model_name
-        and ( input_count + output_count ) > THRESHOLD_OF_GEMINI_PRICE
+        and ( input_count + output_count ) > GEMINI_PRICE_THRESHOLD_TOKENS
     ):
         # Geminiは、トークン数が128kトークンを超過する場合、単価が以下のように変わる仕様
         # Ref: https://ai.google.dev/gemini-api/docs/pricing#gemini-1.5-flash
