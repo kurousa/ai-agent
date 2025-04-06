@@ -38,7 +38,14 @@ def select_model():
         case _:
             raise ValueError("Invalid model selected.")
 
-    return ChatOpenAI(model=st.session_state.model_name, temperature=temperature)
+def init_page():
+    """ページの基本設定"""
+    st.set_page_config(
+        page_title="My ChatGPT",
+        page_icon="🤖",
+    )
+    st.header("My ChatGPT")
+    st.sidebar.title("Options")
 
 def init_messages():
     """会話履歴の消去"""
@@ -50,12 +57,7 @@ def init_messages():
 
 
 def main():
-    st.set_page_config(
-        page_title="My ChatGPT",
-        page_icon="🤖",
-    )
-    st.header("My ChatGPT")
-
+    init_page()
     init_messages()
     llm = select_model()
 
