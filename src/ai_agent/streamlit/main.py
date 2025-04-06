@@ -30,16 +30,17 @@ MODEL_PRICE = {
         "gpt-3.5-turbo": 0.5 / PER_1_000_000_TOKENS,
         "gpt-4o": 5 / PER_1_000_000_TOKENS,
         "gemini-1.5-flash-latest": 0.125 / PER_1_000_000_TOKENS,
-        "claude-3-5-haiku-20241022": 3 / PER_1_000_000_TOKENS
+        "claude-3-5-haiku-20241022": 3 / PER_1_000_000_TOKENS,
     },
     "output": {
         "gpt-3.5-turbo": 1.5 / PER_1_000_000_TOKENS,
         "gpt-4o": 15 / PER_1_000_000_TOKENS,
         "gemini-1.5-flash-latest": 0.375 / PER_1_000_000_TOKENS,
-        "claude-3-5-haiku-20241022": 15 / PER_1_000_000_TOKENS
-    }
+        "claude-3-5-haiku-20241022": 15 / PER_1_000_000_TOKENS,
+    },
 }
-GEMINI_PRICE_THRESHOLD_TOKENS = 128_000 # 128kトークン以上の場合、単価が変わるため
+GEMINI_PRICE_THRESHOLD_TOKENS = 128_000  # 128kトークン以上の場合、単価が変わるため
+
 
 def get_message_counts(text):
     if "gemini" in st.session_state.model_name:
@@ -48,10 +49,13 @@ def get_message_counts(text):
         if "gpt" in st.session_state.model_name:
             encoding = tiktoken.encoding_for_model(st.session_state.model_name)
         else:
-            #NOTE: Claudeはトークン数を取得する方法が不明なため、1トークン=1文字として計算
-            encoding = tiktoken.get_encoding("cl100k_base") # GPT models use cl100k_base encoding
+            # NOTE: Claudeはトークン数を取得する方法が不明なため、1トークン=1文字として計算
+            encoding = tiktoken.get_encoding(
+                "cl100k_base"
+            )  # GPT models use cl100k_base encoding
             print("警告: Claude トークンの計算は近似値です。")
         return len(encoding.encode(text))
+
 
 def calc_cost():
     if len(st.session_state.message_history) == 1:
@@ -74,7 +78,7 @@ def calc_cost():
     output_cost = MODEL_PRICE["output"][st.session_state.model_name] * output_count
     if (
         "gemini" in st.session_state.model_name
-        and ( input_count + output_count ) > GEMINI_PRICE_THRESHOLD_TOKENS
+        and (input_count + output_count) > GEMINI_PRICE_THRESHOLD_TOKENS
     ):
         # Geminiは、トークン数が128kトークンを超過する場合、単価が以下のように変わる仕様
         # Ref: https://ai.google.dev/gemini-api/docs/pricing#gemini-1.5-flash
@@ -86,6 +90,7 @@ def calc_cost():
     cost = output_cost + input_cost
     return cost, output_cost, input_cost
 
+
 def display_cost(cost, output_cost, input_cost):
     """サイドバーにコストを表示する"""
     st.sidebar.markdown("### Cost(USD)")
@@ -96,7 +101,9 @@ def display_cost(cost, output_cost, input_cost):
 
 def select_model():
     """利用するLLMをサイドバーの選択状態によって切り替える"""
-    temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
+    temperature = st.sidebar.slider(
+        "Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1
+    )
     models = (
         "Open AI GPT-3.5-turbo",
         "Open AI GPT-4o",
@@ -110,24 +117,33 @@ def select_model():
     match model:
         case "Open AI GPT-3.5-turbo":
             st.session_state.model_name = "gpt-3.5-turbo"
-            return ChatOpenAI(model=st.session_state.model_name, temperature=temperature)
+            return ChatOpenAI(
+                model=st.session_state.model_name, temperature=temperature
+            )
         case "Open AI GPT-4o":
             st.session_state.model_name = "gpt-4o"
-            return ChatOpenAI(model=st.session_state.model_name, temperature=temperature)
+            return ChatOpenAI(
+                model=st.session_state.model_name, temperature=temperature
+            )
         case "Claude 3.5 Haiku":
             st.session_state.model_name = "claude-3-5-haiku-20241022"
-            return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
+            return ChatAnthropic(
+                model=st.session_state.model_name, temperature=temperature
+            )
         # case "Claude 3.7 Sonnet":
         #     st.session_state.model_name = "claude-3-7-sonnet-20250219"
         #     return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
         case "Google Gemini 1.5 Flash":
             st.session_state.model_name = "gemini-1.5-flash-latest"
-            return ChatGoogleGenerativeAI(model=st.session_state.model_name, temperature=temperature)
+            return ChatGoogleGenerativeAI(
+                model=st.session_state.model_name, temperature=temperature
+            )
         # case "Gemini 2.0 Flash":
         #     st.session_state.model_name = "gemini-2.0-flash-latest"
         #     return ChatGoogleGenerativeAI(model=st.session_state.model_name, temperature=temperature)
         case _:
             raise ValueError("Invalid model selected.")
+
 
 def init_page():
     """ページの基本設定"""
@@ -137,6 +153,7 @@ def init_page():
     )
     st.header("My ChatGPT")
     st.sidebar.title("Options")
+
 
 def init_messages():
     """会話履歴の消去"""
@@ -182,6 +199,7 @@ def main():
     cost_results = calc_cost()
     if cost_results:
         display_cost(*cost_results)
+
 
 if __name__ == "__main__":
     main()
