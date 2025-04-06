@@ -1,5 +1,8 @@
+import tiktoken
 import streamlit as st
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -23,18 +26,35 @@ except ImportError:
 def select_model():
     """利用するLLMをサイドバーの選択状態によって切り替える"""
     temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
-    models = ("GPT-3.5", "GPT-4", "Claude", "Gemini")
+    models = (
+        "Open AI GPT-3.5-turbo",
+        "Open AI GPT-4o",
+        # "Claude 3.5 Haiku",
+        # "Claude 3.7 Sonnet",
+        "Google Gemini 1.5 Flash",
+        # "Gemini 2.0 Flash"
+    )
     model = st.sidebar.radio("Choose a model:", models)
 
     match model:
-        case "GPT-3.5":
+        case "Open AI GPT-3.5-turbo":
             st.session_state.model_name = "gpt-3.5-turbo"
-        case "GPT-4":
+            return ChatOpenAI(model=st.session_state.model_name, temperature=temperature)
+        case "Open AI GPT-4o":
             st.session_state.model_name = "gpt-4o"
-        # case "Claude":
-        #     return ChatOpenAI(model="claude", temperature=temperature)
-        # case "Gemini":
-        #     return ChatOpenAI(model="gemini", temperature=temperature)
+            return ChatOpenAI(model=st.session_state.model_name, temperature=temperature)
+        # case "Claude 3.5 Haiku":
+        #     st.session_state.model_name = "claude-3-5-haiku-20241022"
+        #     return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
+        # case "Claude 3.7 Sonnet":
+        #     st.session_state.model_name = "claude-3-7-sonnet-20250219"
+        #     return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
+        case "Google Gemini 1.5 Flash":
+            st.session_state.model_name = "gemini-1.5-flash-latest"
+            return ChatGoogleGenerativeAI(model=st.session_state.model_name, temperature=temperature)
+        # case "Gemini 2.0 Flash":
+        #     st.session_state.model_name = "gemini-2.0-flash-latest"
+        #     return ChatGoogleGenerativeAI(model=st.session_state.model_name, temperature=temperature)
         case _:
             raise ValueError("Invalid model selected.")
 
