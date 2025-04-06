@@ -56,12 +56,8 @@ def main():
     )
     st.header("My ChatGPT")
 
-    if "message_history" not in st.session_state:
-        st.session_state.message_history = [
-            ("system", "You are a helpful assistant."),
-        ]
-
-    llm = ChatOpenAI(temperature=0)
+    init_messages()
+    llm = select_model()
 
     prompt = ChatPromptTemplate.from_messages(
         [
