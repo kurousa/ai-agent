@@ -23,6 +23,74 @@ except ImportError:
         ImportWarning,
     )
 
+# 1_000_000トークン辺りのコストを算出する
+PER_1_000_000_TOKENS = 1_000_000
+MODEL_PRICE = {
+    "input": {
+        "gpt-3.5-turbo": 0.5 / PER_1_000_000_TOKENS,
+        "gpt-4o": 5 / PER_1_000_000_TOKENS,
+        "gemini-1.5-flash-latest": 0.125 / PER_1_000_000_TOKENS
+    },
+    "output": {
+        "gpt-3.5-turbo": 1.5 / PER_1_000_000_TOKENS,
+        "gpt-4o": 15 / PER_1_000_000_TOKENS,
+        "gemini-1.5-flash-latest": 0.375 / PER_1_000_000_TOKENS
+    }
+}
+THRESHOLD_OF_GEMINI_PRICE = 128_000 # 128kトークン以上の場合、単価が変わるため
+
+def get_message_counts(text):
+    if "gemini" in st.session_state.model_name:
+        return st.session_state.llm.get_num_tokens(text)
+    else:
+        if "gpt" in st.session_state.model_name:
+            encoding = tiktoken.encoding_for_model(st.session_state.model_name)
+        else:
+            #NOTE: Claudeはトークン数を取得する方法が不明なため、1トークン=1文字として計算
+            encoding = tiktoken.get_encoding("gpt-3.5-turbo") # dummy
+        return len(encoding.encode(text))
+
+def calc_cost():
+    if len(st.session_state.message_history) == 1:
+        # 初期状態はシステムメッセージのみが入った状態であるため処理をスキップ
+        return
+
+    output_count = 0
+    input_count = 0
+    for role, message in st.session_state.message_history:
+        token_count = get_message_counts(message)
+        match role:
+            case "user":
+                input_count += token_count
+            case "ai":
+                output_count += token_count
+            case _:
+                pass
+
+    input_cost = MODEL_PRICE["input"][st.session_state.model_name] * input_count
+    output_cost = MODEL_PRICE["output"][st.session_state.model_name] * output_count
+    if (
+        "gemini" in st.session_state.model_name
+        and ( input_count + output_count ) > THRESHOLD_OF_GEMINI_PRICE
+    ):
+        # Geminiは、トークン数が128kトークンを超過する場合、単価が以下のように変わる仕様
+        # Ref: https://ai.google.dev/gemini-api/docs/pricing#gemini-1.5-flash
+        # As of 2025-04, the pricing for Gemini 1.5 Flash is as follows:
+        # Input: $0.075, prompts <= 128k tokens, $0.15, prompts > 128k tokens
+        # Output: $0.30, prompts <= 128k tokens, $0.60, prompts > 128k tokens
+        input_cost *= 2
+        output_cost *= 2
+    cost = output_cost + input_cost
+    return cost, output_cost, input_cost
+
+def display_cost(cost, output_cost, input_cost):
+    """サイドバーにコストを表示する"""
+    st.sidebar.markdown("### Cost(USD)")
+    st.sidebar.markdown(f"**Total Cost:** ${cost:.6f}")
+    st.sidebar.markdown(f"**Output Cost:** ${output_cost:.6f}")
+    st.sidebar.markdown(f"**Input Cost:** ${input_cost:.6f}")
+
+
 def select_model():
     """利用するLLMをサイドバーの選択状態によって切り替える"""
     temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
@@ -107,9 +175,10 @@ def main():
 
         st.session_state.message_history.append(("ai", response))
 
-    for role, message in st.session_state.get("message_history", []):
-        st.chat_message(role).markdown(message)
-
+    # コスト計算を行い、サイドバーに出力
+    cost_results = calc_cost()
+    if cost_results:
+        display_cost(*cost_results)
 
 if __name__ == "__main__":
     main()
