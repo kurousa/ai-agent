@@ -102,8 +102,12 @@ def get_content(url):
                 return soup.article.get_text()
             else:
                 return soup.body.get_text()
-    except:
-        st.error("Failed to fetch content from the URL.")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Failed to fetch content from the URL: {e}")
+        print(traceback.format_exc())
+        return None
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
         print(traceback.format_exc())
         return None
 
