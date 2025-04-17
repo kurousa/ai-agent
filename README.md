@@ -1,17 +1,15 @@
-# AI-Agent Chat App
+# AI-Agent Apps
 
 ## 概要
 
-このリポジトリは、複数のAI大規模言語モデル（LLM）を使用したチャットアプリケーションの実装です。
+このリポジトリは、複数のAI大規模言語モデル（LLM）を使用した各種アプリの実装を行っています。
 
-以下の機能を提供します：
+現在利用可能なアプリは以下の通りです。
 
-- 複数のLLMプロバイダー（OpenAI、Anthropic、Google）のサポート
-- リアルタイムのトークン使用量とコスト計算
-- チャット履歴の管理
-- 会話のストリーミング表示
+- [Chat](#chat)
+- [Website Summarizer](#website-summarizer)
 
-## 準備
+## (共通)準備
 
 - このリポジトリは`Rye`で管理されています。未インストールの場合は先に`rye`をインストールしてください。
 - `.env`ファイルを作成してください（`.env.example`からコピーすることをお勧めします）。
@@ -31,7 +29,7 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here
 GOOGLE_API_KEY=your_google_api_key_here
 ```
 
-## サポートされているモデル
+## (共通)サポートされているモデル
 
 現在、以下のモデルがサポートされています：
 
@@ -40,7 +38,16 @@ GOOGLE_API_KEY=your_google_api_key_here
 - Anthropic Claude 3.5 Haiku
 - Google Gemini 1.5 Flash
 
-## 機能
+## Chat
+
+チャットアプリケーションの実装です。
+
+以下の機能を提供します：
+
+- 複数のLLMプロバイダー（OpenAI、Anthropic、Google）のサポート
+- リアルタイムのトークン使用量とコスト計算
+- チャット履歴の管理
+- 会話のストリーミング表示
 
 ### コスト計算
 
@@ -65,7 +72,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 会話の全履歴が保存され、表示されます。「Clear Conversation」ボタンでいつでも履歴をクリアできます。
 
-## 使用方法
+### 使用方法
 
 - チャットアプリを実行：
 
@@ -79,9 +86,45 @@ GOOGLE_API_KEY=your_google_api_key_here
   3. チャットボックスにメッセージを入力して会話を開始
   4. サイドバーでコスト情報を確認
 
+## Website Summarizer
+
+ウェブサイト要約アプリケーションの実装です。
+
+指定されたURLのウェブサイトの内容を要約します。
+
+### 使用方法
+
+- ウェブサイト要約アプリを実行：
+
+  ```shell
+  rye run website_summarizer
+  ```
+
+- アプリケーション起動後：
+  1. URL入力ボックスに要約したいウェブサイトのURLを入力し、Enterキーを押下
+  2. 要約結果が表示されます
+
+### 仕組み
+
+1.  URLからウェブサイトのコンテンツをスクレイピング
+2.  スクレイピングしたコンテンツをLLMに送信
+3.  LLMがコンテンツを要約
+4.  要約結果を画面に表示
+    - 要約にはOpenAIのGPT-3.5-turboが使用されます。
+
+### 必要なライブラリ
+
+- `requests`: ウェブサイトのコンテンツを取得するために使用
+- `beautifulsoup4`: HTMLコンテンツの解析に使用
+- `streamlit`: UIの構築に使用
+- `openai`: OpenAI APIとの連携に使用
+- `tiktoken`: OpenAI APIで利用するトークン数の計算に使用
+
+これらのライブラリは、`rye`によって管理されています。
+
 ## 開発者向け情報
 
-### モデルの追加方法
+### (ChatApp)モデルの追加方法
 
 新しいモデルを追加するには：
 
