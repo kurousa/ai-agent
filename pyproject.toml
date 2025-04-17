@@ -42,7 +42,8 @@ dev-dependencies = [
 
 [tool.rye.scripts]
 streamlit = "streamlit"
-chat = "streamlit run src/ai_agent/streamlit/main.py"
+chat = "streamlit run src/ai_agent/streamlit/chat.py"
+website_summarizer = "streamlit run src/ai_agent/streamlit/website_summarizer.py"
 
 [tool.hatch.metadata]
 allow-direct-references = true
