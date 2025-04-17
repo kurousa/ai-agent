@@ -1,0 +1,44 @@
+# chapter 1
+rye add openai==1.29.0
+rye add anthropic==0.25.7
+rye add google-generativeai==0.5.2
+rye add tiktoken==0.7.0
+rye add streamlit==1.33.0
+rye add langchain==0.1.16
+rye add langchain-community==0.0.34
+rye add langchain-openai==0.1.3
+rye add langchain-core==0.1.46
+rye add langchain-google-genai==1.0.3
+rye add langchain-anthropic==0.1.11
+rye add python-dotenv==1.0.0
+
+## chapter 5
+# Webサイト要約アプリ用
+rye add requests==2.31.0
+rye add beautifulsoup4==4.12.3
+rye add langchain_text_splitters==0.0.1
+
+# Youtube要約アプリ用
+rye add youtube-transcript-api==0.6.2
+rye add pytube==15.0.0
+
+# chapter 7
+rye add PyMuPDF==1.23.25
+rye add faiss-cpu==1.7.4
+
+# chapter 8
+rye add langsmith==0.1.54
+
+# chapter 9
+rye add duckduckgo_search==4.2
+rye add html2text==2020.1.16
+rye add lxml[html_clean]==5.2.1
+rye add readability-lxml==0.8.1
+
+# chapter 10
+rye add streamlit-feedback==0.1.3
+
+# chapter 11
+rye add python-magic==0.4.27
+rye add google-cloud-bigquery==3.21.0
+rye add db-dtypes==1.2.0
