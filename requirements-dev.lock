@@ -32,6 +32,8 @@ attrs==25.3.0
     # via aiohttp
     # via jsonschema
     # via referencing
+beautifulsoup4==4.12.3
+    # via ai-agent
 blinker==1.9.0
     # via streamlit
 cachetools==5.5.2
@@ -41,7 +43,10 @@ certifi==2025.1.31
     # via httpcore
     # via httpx
     # via requests
+chardet==5.2.0
+    # via ai-agent
 charset-normalizer==3.4.1
+    # via ai-agent
     # via requests
 click==8.1.8
     # via streamlit
@@ -149,7 +154,8 @@ langchain-google-genai==1.0.3
     # via ai-agent
 langchain-openai==0.1.3
     # via ai-agent
-langchain-text-splitters==0.0.2
+langchain-text-splitters==0.0.1
+    # via ai-agent
     # via langchain
 langsmith==0.1.147
     # via langchain
@@ -235,6 +241,8 @@ python-dateutil==2.9.0.post0
     # via pandas
 python-dotenv==1.0.0
     # via ai-agent
+pytube==15.0.0
+    # via ai-agent
 pytz==2025.2
     # via pandas
 pyyaml==6.0.2
@@ -247,7 +255,8 @@ referencing==0.36.2
     # via jsonschema-specifications
 regex==2024.11.6
     # via tiktoken
-requests==2.32.3
+requests==2.31.0
+    # via ai-agent
     # via google-api-core
     # via huggingface-hub
     # via langchain
@@ -256,6 +265,7 @@ requests==2.32.3
     # via requests-toolbelt
     # via streamlit
     # via tiktoken
+    # via youtube-transcript-api
 requests-toolbelt==1.0.0
     # via langsmith
 rich==13.9.4
@@ -274,6 +284,8 @@ sniffio==1.3.1
     # via anyio
     # via httpx
     # via openai
+soupsieve==2.6
+    # via beautifulsoup4
 sqlalchemy==2.0.40
     # via langchain
     # via langchain-community
@@ -325,3 +337,5 @@ watchdog==6.0.0
     # via streamlit
 yarl==1.18.3
     # via aiohttp
+youtube-transcript-api==0.6.2
+    # via ai-agent
