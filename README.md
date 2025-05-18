@@ -9,6 +9,7 @@
 - [Chat](#chat)
 - [Website Summarizer](#website-summarizer)
 - [Image Recognizer](#image-recognizer)
+- [Image Generator](#image-generator)
 
 ## (共通)準備
 
@@ -141,6 +142,24 @@ rye run image_recognizer
    - OpenAI GPT-4oで処理
 4. 処理結果を画面に出力
 
+## Image Generator
+
+アップロードされた画像ファイルを基に、ユーザーにリクエストに応じた画像を、
+DALL-E 3で生成する
+
+### 使用方法
+
+```shell
+rye run image_generator
+```
+
+### 仕組み
+
+1. 画像アップロードしてもらう
+2. ユーザーにリクエストを入力してもらう
+3. 画像とユーザーからのインプットを基に、GPT-4VにDALL-E 3プロンプトを組み上げる
+4. DALL-E 3へ生成したプロンプトを投げる
+5. 処理結果を画面に出力
 
 ## 開発者向け情報
 
