@@ -44,6 +44,8 @@ dev-dependencies = [
 streamlit = "streamlit"
 chat = "streamlit run src/ai_agent/streamlit/chat.py"
 website_summarizer = "streamlit run src/ai_agent/streamlit/website_summarizer.py"
+image_recognizer = "streamlit run src/ai_agent/streamlit/image_recognizer.py"
+image_generator = "streamlit run src/ai_agent/streamlit/image_generator.py"
 
 [tool.hatch.metadata]
 allow-direct-references = true
