@@ -8,6 +8,7 @@
 
 - [Chat](#chat)
 - [Website Summarizer](#website-summarizer)
+- [Image Recognizer](#image-recognizer)
 
 ## (共通)準備
 
@@ -121,6 +122,25 @@ GOOGLE_API_KEY=your_google_api_key_here
 - `tiktoken`: OpenAI APIで利用するトークン数の計算に使用
 
 これらのライブラリは、`rye`によって管理されています。
+
+## Image Recognizer
+
+アップロードされた画像ファイルについての説明を行うアプリケーション。
+
+### 使用方法
+
+```shell
+rye run image_recognizer
+```
+
+### 仕組み
+
+1. 画像アップロードしてもらう
+2. ユーザーに聞きたいことを入力
+3. 画像とユーザーからのインプットを基にプロンプトを組み上げて、LLMへ問い合わせ
+   - OpenAI GPT-4oで処理
+4. 処理結果を画面に出力
+
 
 ## 開発者向け情報
 
