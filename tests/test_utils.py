@@ -1,5 +1,4 @@
-import ipaddress
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from ai_agent.utils import validate_url, validate_youtube_url
 
 
