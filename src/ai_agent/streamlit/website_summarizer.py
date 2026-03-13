@@ -2,6 +2,7 @@ import traceback
 import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from urllib.parse import urlparse, urlunparse
 
 # models
 from langchain_openai import ChatOpenAI
@@ -83,15 +84,45 @@ def init_chain():
     return chain
 
 
-def get_content(url):
-    if not validate_url(url):
-        st.error("無効なURLまたは許可されていないURLです。")
-        return None
+def get_content(url, safe_ip):
+    """検証済みIPアドレスを使ってコンテンツを取得する (TOCTOU対策)。
 
+    Args:
+        url: 元のURL文字列
+        safe_ip: validate_url で検証済みのIPアドレス
+    """
     try:
         with st.spinner("Fetching content..."):
-            # Disable redirects to prevent SSRF bypass
-            response = requests.get(url, allow_redirects=False)
+            parsed_url = urlparse(url)
+
+            # IPv6アドレスの場合はブラケットで囲む
+            if ":" in safe_ip:
+                netloc = f"[{safe_ip}]"
+            else:
+                netloc = safe_ip
+
+            # ポートが指定されている場合は付加
+            if parsed_url.port:
+                netloc = f"{netloc}:{parsed_url.port}"
+
+            # IPアドレスでURLを再構築（パス・クエリ等は保持）
+            safe_request_url = urlunparse(
+                (
+                    parsed_url.scheme,
+                    netloc,
+                    parsed_url.path,
+                    parsed_url.params,
+                    parsed_url.query,
+                    parsed_url.fragment,
+                )
+            )
+
+            # 検証済みIPに直接リクエスト、Hostヘッダーで元のホスト名を指定
+            response = requests.get(
+                safe_request_url,
+                headers={"Host": parsed_url.hostname},
+                allow_redirects=False,
+            )
             if response.status_code in (301, 302, 303, 307, 308):
                 st.error("リダイレクトは許可されていません。")
                 return None
@@ -118,13 +149,13 @@ def main():
     chain = init_chain()
 
     if url := st.text_input("URL: ", key="input"):
-        is_valid_url = validate_url(url)
+        safe_ip = validate_url(url)
 
-        if not is_valid_url:
+        if not safe_ip:
             st.error("無効なURLです。")
             return
 
-        if content := get_content(url):
+        if content := get_content(url, safe_ip):
             st.markdown("## Summary")
             st.write_stream(chain.stream({"content": content}))
             st.markdown("---")
