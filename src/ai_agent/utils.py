@@ -1,6 +1,7 @@
-import socket
 import ipaddress
+import socket
 from urllib.parse import urlparse
+
 
 def validate_url(url):
     try:

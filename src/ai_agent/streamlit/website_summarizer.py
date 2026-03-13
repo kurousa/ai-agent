@@ -10,7 +10,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 import requests
 from bs4 import BeautifulSoup
-from src.ai_agent.utils import validate_url
+from ai_agent.utils import validate_url
 
 SUMMARIZE_PROMPT = """
 以下のコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
@@ -83,12 +83,19 @@ def init_chain():
     return chain
 
 
-
-
 def get_content(url):
+    if not validate_url(url):
+        st.error("無効なURLまたは許可されていないURLです。")
+        return None
+
     try:
         with st.spinner("Fetching content..."):
-            response = requests.get(url)
+            # Disable redirects to prevent SSRF bypass
+            response = requests.get(url, allow_redirects=False)
+            if response.status_code in (301, 302, 303, 307, 308):
+                st.error("リダイレクトは許可されていません。")
+                return None
+
             soup = BeautifulSoup(response.text, "html.parser")
             if soup.main:
                 return soup.main.get_text()
