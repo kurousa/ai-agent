@@ -9,7 +9,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from langchain_community.document_loaders import YoutubeLoader
-from ai_agent.utils import validate_url
+from ai_agent.utils import validate_youtube_url
 
 SUMMARIZE_PROMPT = """
 以下のコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
@@ -96,7 +96,7 @@ def get_content(url):
             - length: int
             - author: str
     """
-    if not validate_url(url):
+    if not validate_youtube_url(url):
         st.error("無効なURLまたは許可されていないURLです。")
         return None
 
@@ -125,7 +125,7 @@ def main():
     chain = init_chain()
 
     if url := st.text_input("URL: ", key="input"):
-        is_valid_url = validate_url(url)
+        is_valid_url = validate_youtube_url(url)
 
         if not is_valid_url:
             st.error("無効なURLです。")
