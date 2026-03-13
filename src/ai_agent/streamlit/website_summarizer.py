@@ -10,7 +10,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+from src.ai_agent.utils import validate_url
 
 SUMMARIZE_PROMPT = """
 以下のコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
@@ -83,12 +83,6 @@ def init_chain():
     return chain
 
 
-def validate_url(url):
-    try:
-        result = urlparse(url)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
 
 
 def get_content(url):
