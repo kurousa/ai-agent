@@ -9,7 +9,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from langchain_community.document_loaders import YoutubeLoader
-from urllib.parse import urlparse
+from .utils import validate_url
 
 SUMMARIZE_PROMPT = """
 以下のコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
@@ -80,14 +80,6 @@ def init_chain():
     output_parser = StrOutputParser()
     chain = prompt | llm | output_parser
     return chain
-
-
-def validate_url(url):
-    try:
-        result = urlparse(url)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
 
 
 def get_content(url):
