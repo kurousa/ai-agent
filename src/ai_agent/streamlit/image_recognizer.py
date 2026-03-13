@@ -6,12 +6,6 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-    # [debug]check envs
-    # import os
-
-    # environment_variables = os.environ
-    # for key, value in environment_variables.items():
-    #     print(f"{key}={value}")
 except ImportError:
     import warnings
 
