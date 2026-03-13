@@ -71,6 +71,7 @@ def calc_cost():
             encoding = tiktoken.encoding_for_model(st.session_state.model_name)
         else:
             encoding = tiktoken.get_encoding("cl100k_base")
+            print("警告: Claude トークンの計算は近似値です。")
 
     for role, message in st.session_state.message_history:
         token_count = get_message_counts(message, encoding=encoding)
