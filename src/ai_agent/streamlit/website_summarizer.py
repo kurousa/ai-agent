@@ -2,6 +2,7 @@ import traceback
 import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from urllib.parse import urlparse, urlunparse
 
 # models
 from langchain_openai import ChatOpenAI
@@ -10,7 +11,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+from ai_agent.utils import validate_url
 
 SUMMARIZE_PROMPT = """
 以下のコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
@@ -83,18 +84,49 @@ def init_chain():
     return chain
 
 
-def validate_url(url):
-    try:
-        result = urlparse(url)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
+def get_content(url, safe_ip):
+    """検証済みIPアドレスを使ってコンテンツを取得する (TOCTOU対策)。
 
-
-def get_content(url):
+    Args:
+        url: 元のURL文字列
+        safe_ip: validate_url で検証済みのIPアドレス
+    """
     try:
         with st.spinner("Fetching content..."):
-            response = requests.get(url)
+            parsed_url = urlparse(url)
+
+            # IPv6アドレスの場合はブラケットで囲む
+            if ":" in safe_ip:
+                netloc = f"[{safe_ip}]"
+            else:
+                netloc = safe_ip
+
+            # ポートが指定されている場合は付加
+            if parsed_url.port:
+                netloc = f"{netloc}:{parsed_url.port}"
+
+            # IPアドレスでURLを再構築（パス・クエリ等は保持）
+            safe_request_url = urlunparse(
+                (
+                    parsed_url.scheme,
+                    netloc,
+                    parsed_url.path,
+                    parsed_url.params,
+                    parsed_url.query,
+                    parsed_url.fragment,
+                )
+            )
+
+            # 検証済みIPに直接リクエスト、Hostヘッダーで元のホスト名を指定
+            response = requests.get(
+                safe_request_url,
+                headers={"Host": parsed_url.hostname},
+                allow_redirects=False,
+            )
+            if response.status_code in (301, 302, 303, 307, 308):
+                st.error("リダイレクトは許可されていません。")
+                return None
+
             soup = BeautifulSoup(response.text, "html.parser")
             if soup.main:
                 return soup.main.get_text()
@@ -117,13 +149,13 @@ def main():
     chain = init_chain()
 
     if url := st.text_input("URL: ", key="input"):
-        is_valid_url = validate_url(url)
+        safe_ip = validate_url(url)
 
-        if not is_valid_url:
+        if not safe_ip:
             st.error("無効なURLです。")
             return
 
-        if content := get_content(url):
+        if content := get_content(url, safe_ip):
             st.markdown("## Summary")
             st.write_stream(chain.stream({"content": content}))
             st.markdown("---")
