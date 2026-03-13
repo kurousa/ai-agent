@@ -83,10 +83,6 @@ def init_chain():
 
 
 def get_content(url):
-    if not validate_url(url):
-        st.error("無効なURLまたは許可されていないURLです。")
-        return None
-
     """
     Document:
         - page_content: str
@@ -100,6 +96,10 @@ def get_content(url):
             - length: int
             - author: str
     """
+    if not validate_url(url):
+        st.error("無効なURLまたは許可されていないURLです。")
+        return None
+
     with st.spinner("Fetching content..."):
         loader = YoutubeLoader.from_youtube_url(
             url,
