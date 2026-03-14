@@ -14,28 +14,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4 # コードをチェックアウト
 
-    - name: Set up Rye
-      uses: eifinger/setup-rye@v1 # Rye をセットアップ
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5 # uv をセットアップ
       with:
-        enable-cache: true # Rye 自体のキャッシュを有効にする (推奨)
-
-    - name: Cache dependencies
-      uses: actions/cache@v4 # 依存関係 (.venv) をキャッシュ
-      with:
-        path: ./.venv # キャッシュ対象のディレクトリ
-        # キャッシュキー: OS、Ryeが管理するPythonバージョン、ロックファイルの内容に基づいて作成
-        key: ${{ runner.os }}-rye-${{ hashFiles('requirements.lock', 'requirements-dev.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-rye-
+        enable-cache: true # uv のキャッシュを有効にする
 
     - name: Sync dependencies
-      run: rye sync --no-lock
+      run: uv sync
 
     - name: Lint code
-      run: rye lint --quiet --pyproject pyproject.toml # リンターを実行
+      run: uv run ruff check --quiet # リンターを実行
 
     - name: Check formatting
-      run: rye fmt --check # フォーマットをチェック
+      run: uv run ruff format --check # フォーマットをチェック
 
     - name: Run tests
-      run: rye test # テストを実行
+      run: uv run pytest # テストを実行

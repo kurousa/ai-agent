@@ -28,24 +28,17 @@ dependencies = [
     "chardet>=5.2.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.8"
+requires-python = ">= 3.12"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.rye]
-managed = true
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest>=8.3.5",
+    "ruff>=0.15.6",
 ]
-
-[tool.rye.scripts]
-streamlit = "streamlit"
-chat = "streamlit run src/ai_agent/streamlit/chat.py"
-website_summarizer = "streamlit run src/ai_agent/streamlit/website_summarizer.py"
-image_recognizer = "streamlit run src/ai_agent/streamlit/image_recognizer.py"
-image_generator = "streamlit run src/ai_agent/streamlit/image_generator.py"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -79,5 +72,5 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
-    ".rye",
+
 ]
