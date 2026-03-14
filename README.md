@@ -13,7 +13,7 @@
 
 ## (共通)準備
 
-- このリポジトリは`Rye`で管理されています。未インストールの場合は先に`rye`をインストールしてください。
+- このリポジトリは`uv`で管理されています。未インストールの場合は先に`uv`をインストールしてください。
 - `.env`ファイルを作成してください（`.env.example`からコピーすることをお勧めします）。
 
 各サービスのAPIトークンを`.env`ファイルに設定し、プロジェクトのルートディレクトリに配置してください。環境変数は`python-dotenv`によってロードされます。
@@ -79,7 +79,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 - チャットアプリを実行：
 
   ```shell
-  rye run chat
+   uv run streamlit run src/ai_agent/streamlit/chat.py
   ```
 
 - アプリケーション起動後：
@@ -99,7 +99,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 - ウェブサイト要約アプリを実行：
 
   ```shell
-  rye run website_summarizer
+   uv run streamlit run src/ai_agent/streamlit/website_summarizer.py
   ```
 
 - アプリケーション起動後：
@@ -122,7 +122,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 - `openai`: OpenAI APIとの連携に使用
 - `tiktoken`: OpenAI APIで利用するトークン数の計算に使用
 
-これらのライブラリは、`rye`によって管理されています。
+これらのライブラリは、`uv`によって管理されています。
 
 ## Image Recognizer
 
@@ -131,7 +131,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 ### 使用方法
 
 ```shell
-rye run image_recognizer
+uv run streamlit run src/ai_agent/streamlit/image_recognizer.py
 ```
 
 ### 仕組み
@@ -150,7 +150,7 @@ DALL-E 3で生成する
 ### 使用方法
 
 ```shell
-rye run image_generator
+uv run streamlit run src/ai_agent/streamlit/image_generator.py
 ```
 
 ### 仕組み
