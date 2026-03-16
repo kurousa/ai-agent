@@ -122,6 +122,7 @@ def get_content(url, safe_ip):
                 safe_request_url,
                 headers={"Host": parsed_url.hostname},
                 allow_redirects=False,
+                timeout=10,
             )
             if response.status_code in (301, 302, 303, 307, 308):
                 st.error("リダイレクトは許可されていません。")
