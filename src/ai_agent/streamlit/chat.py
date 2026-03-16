@@ -1,3 +1,4 @@
+import functools
 import tiktoken
 import streamlit as st
 from langchain_openai import ChatOpenAI
@@ -37,18 +38,23 @@ MODEL_PRICE = {
 GEMINI_PRICE_THRESHOLD_TOKENS = 128_000  # 128kトークン以上の場合、単価が変わるため
 
 
+@functools.lru_cache
+def _get_encoding(model_name):
+    if "gpt" in model_name:
+        return tiktoken.encoding_for_model(model_name)
+    else:
+        # NOTE: Claudeはトークン数を取得する方法が不明なため、1トークン=1文字として計算
+        # GPT models use cl100k_base encoding
+        return tiktoken.get_encoding("cl100k_base")
+
+
 def get_message_counts(text, encoding=None):
     if "gemini" in st.session_state.model_name:
         return st.session_state.llm.get_num_tokens(text)
     else:
         if encoding is None:
-            if "gpt" in st.session_state.model_name:
-                encoding = tiktoken.encoding_for_model(st.session_state.model_name)
-            else:
-                # NOTE: Claudeはトークン数を取得する方法が不明なため、1トークン=1文字として計算
-                encoding = tiktoken.get_encoding(
-                    "cl100k_base"
-                )  # GPT models use cl100k_base encoding
+            encoding = _get_encoding(st.session_state.model_name)
+            if "gpt" not in st.session_state.model_name:
                 print("警告: Claude トークンの計算は近似値です。")
         return len(encoding.encode(text))
 
@@ -62,10 +68,8 @@ def calc_cost():
     input_count = 0
     encoding = None
     if "gemini" not in st.session_state.model_name:
-        if "gpt" in st.session_state.model_name:
-            encoding = tiktoken.encoding_for_model(st.session_state.model_name)
-        else:
-            encoding = tiktoken.get_encoding("cl100k_base")
+        encoding = _get_encoding(st.session_state.model_name)
+        if "gpt" not in st.session_state.model_name:
             print("警告: Claude トークンの計算は近似値です。")
 
     for role, message in st.session_state.message_history:
