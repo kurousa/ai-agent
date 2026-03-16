@@ -112,9 +112,7 @@ def select_model():
         "Open AI GPT-3.5-turbo",
         "Open AI GPT-4o",
         "Claude 3.5 Haiku",
-        # "Claude 3.7 Sonnet",
         "Google Gemini 1.5 Flash",
-        # "Gemini 2.0 Flash"
     )
     model = st.sidebar.radio("Choose a model:", models)
 
@@ -134,17 +132,11 @@ def select_model():
             return ChatAnthropic(
                 model=st.session_state.model_name, temperature=temperature
             )
-        # case "Claude 3.7 Sonnet":
-        #     st.session_state.model_name = "claude-3-7-sonnet-20250219"
-        #     return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
         case "Google Gemini 1.5 Flash":
             st.session_state.model_name = "gemini-1.5-flash-latest"
             return ChatGoogleGenerativeAI(
                 model=st.session_state.model_name, temperature=temperature
             )
-        # case "Gemini 2.0 Flash":
-        #     st.session_state.model_name = "gemini-2.0-flash-latest"
-        #     return ChatGoogleGenerativeAI(model=st.session_state.model_name, temperature=temperature)
         case _:
             raise ValueError("Invalid model selected.")
 
