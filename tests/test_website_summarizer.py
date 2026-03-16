@@ -45,6 +45,7 @@ def test_get_content_fallback_to_body(mock_bs, mock_requests, mock_st):
         "http://93.184.216.34/path",
         headers={"Host": "example.com"},
         allow_redirects=False,
+        timeout=10,
     )
 
 
