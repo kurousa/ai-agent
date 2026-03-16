@@ -1,5 +1,4 @@
 from unittest.mock import patch, MagicMock
-import sys
 
 # We need to mock these before the import of get_content
 MOCK_MODULES = {
@@ -15,10 +14,9 @@ MOCK_MODULES = {
 }
 
 with patch.dict("sys.modules", MOCK_MODULES):
-    import ai_agent.streamlit.website_summarizer as website_summarizer
-    from ai_agent.streamlit.website_summarizer import get_content
+    import ai_agent.streamlit.website_summarizer as website_summarizer  # noqa: E402
+    from ai_agent.streamlit.website_summarizer import get_content  # noqa: E402
 
-import pytest
 
 @patch.object(website_summarizer, "st")
 @patch.object(website_summarizer, "requests")
@@ -49,6 +47,7 @@ def test_get_content_fallback_to_body(mock_bs, mock_requests, mock_st):
         allow_redirects=False,
     )
 
+
 @patch.object(website_summarizer, "st")
 @patch.object(website_summarizer, "requests")
 @patch.object(website_summarizer, "BeautifulSoup")
@@ -67,6 +66,7 @@ def test_get_content_main_priority(mock_bs, mock_requests, mock_st):
     result = get_content("http://example.com", "93.184.216.34")
 
     assert result == "Main Content"
+
 
 @patch.object(website_summarizer, "st")
 @patch.object(website_summarizer, "requests")
@@ -87,6 +87,7 @@ def test_get_content_article_priority(mock_bs, mock_requests, mock_st):
     result = get_content("http://example.com", "93.184.216.34")
 
     assert result == "Article Content"
+
 
 @patch.object(website_summarizer, "st")
 @patch.object(website_summarizer, "requests")
