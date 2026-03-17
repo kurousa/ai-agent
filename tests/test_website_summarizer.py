@@ -15,7 +15,7 @@ MOCK_MODULES = {
 
 with patch.dict("sys.modules", MOCK_MODULES):
     import ai_agent.streamlit.website_summarizer as website_summarizer  # noqa: E402
-    from ai_agent.streamlit.website_summarizer import get_content  # noqa: E402
+    from ai_agent.streamlit.website_summarizer import get_content, MAX_CONTENT_LENGTH  # noqa: E402
 
 
 @patch.object(website_summarizer, "st")
@@ -115,13 +115,13 @@ def test_get_content_length_limit(mock_bs, mock_requests, mock_st):
     mock_requests.get.return_value = mock_response
 
     mock_soup = MagicMock()
-    mock_soup.main.get_text.return_value = "A" * 25000
+    mock_soup.main.get_text.return_value = "A" * (MAX_CONTENT_LENGTH + 5000)
     mock_bs.return_value = mock_soup
 
     result = get_content("http://example.com", "93.184.216.34")
 
-    assert len(result) == 20000
-    assert result == "A" * 20000
+    assert len(result) == MAX_CONTENT_LENGTH
+    assert result == "A" * MAX_CONTENT_LENGTH
 
 
 @patch.object(website_summarizer, "select_model")
