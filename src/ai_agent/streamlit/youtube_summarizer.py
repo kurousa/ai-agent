@@ -11,13 +11,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.document_loaders import YoutubeLoader
 from ai_agent.utils import validate_youtube_url
 
-SUMMARIZE_PROMPT = """
+SYSTEM_PROMPT = """
 以下のコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
-
-==========
-{content}
-==========
-
 回答は、日本語で行うこと。
 """
 
@@ -74,7 +69,8 @@ def init_chain():
     llm = select_model()
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("user", SUMMARIZE_PROMPT),
+            ("system", SYSTEM_PROMPT),
+            ("user", "{content}"),
         ]
     )
     output_parser = StrOutputParser()
