@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from ai_agent.utils import validate_url, validate_youtube_url
 
 
@@ -53,3 +53,51 @@ def test_validate_youtube_url_valid():
 
 def test_validate_youtube_url_non_youtube():
     assert validate_youtube_url("https://evil.com/watch?v=abc") is False
+
+
+MOCK_MODULES = {
+    "streamlit": MagicMock(),
+    "langchain_core": MagicMock(),
+    "langchain_core.prompts": MagicMock(),
+    "langchain_core.output_parsers": MagicMock(),
+    "langchain_openai": MagicMock(),
+    "langchain_anthropic": MagicMock(),
+    "langchain_google_genai": MagicMock(),
+    "langchain_community.document_loaders": MagicMock(),
+}
+
+with patch.dict("sys.modules", MOCK_MODULES):
+    import ai_agent.streamlit.youtube_summarizer as youtube_summarizer  # noqa: E402
+
+
+@patch.object(youtube_summarizer, "select_model")
+@patch.object(youtube_summarizer, "ChatPromptTemplate")
+def test_youtube_summarizer_prompt_structure(
+    mock_chat_prompt_template, mock_select_model
+):
+    """Verify that the prompt correctly separates system instructions and user content to prevent prompt injection."""
+
+    mock_select_model.return_value = MagicMock()
+    mock_chat_prompt_template.from_messages.return_value = MagicMock()
+
+    # Call the function that creates the chain (and the prompt)
+    youtube_summarizer.init_chain()
+
+    # Verify from_messages was called
+    mock_chat_prompt_template.from_messages.assert_called_once()
+
+    # Get the messages argument passed to from_messages
+    messages = mock_chat_prompt_template.from_messages.call_args[0][0]
+
+    # Verify structure: [(system, ...), (user, {content})]
+    assert len(messages) == 2, "Prompt should have two messages (system and user)"
+
+    system_role, system_content = messages[0]
+    assert system_role == "system", "First message should be the system prompt"
+    assert "要約" in system_content, "System prompt should contain the instructions"
+
+    user_role, user_content = messages[1]
+    assert user_role == "user", "Second message should be the user content"
+    assert user_content == "{content}", (
+        "User message should just be the content variable"
+    )
