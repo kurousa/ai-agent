@@ -72,7 +72,9 @@ with patch.dict("sys.modules", MOCK_MODULES):
 
 @patch.object(youtube_summarizer, "select_model")
 @patch.object(youtube_summarizer, "ChatPromptTemplate")
-def test_youtube_summarizer_prompt_structure(mock_chat_prompt_template, mock_select_model):
+def test_youtube_summarizer_prompt_structure(
+    mock_chat_prompt_template, mock_select_model
+):
     """Verify that the prompt correctly separates system instructions and user content to prevent prompt injection."""
 
     mock_select_model.return_value = MagicMock()
@@ -96,4 +98,6 @@ def test_youtube_summarizer_prompt_structure(mock_chat_prompt_template, mock_sel
 
     user_role, user_content = messages[1]
     assert user_role == "user", "Second message should be the user content"
-    assert user_content == "{content}", "User message should just be the content variable"
+    assert user_content == "{content}", (
+        "User message should just be the content variable"
+    )
