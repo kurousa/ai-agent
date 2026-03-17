@@ -13,6 +13,8 @@ import requests
 from bs4 import BeautifulSoup
 from ai_agent.utils import validate_url
 
+MAX_CONTENT_LENGTH = 20000
+
 SYSTEM_PROMPT = """
 あなたは優秀な要約アシスタントです。
 ユーザーから提供されたコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
@@ -136,9 +138,8 @@ def get_content(url, safe_ip):
                 content = soup.body.get_text()
 
             # 抽出したテキストが長すぎる場合の対策 (Prompt Injection / DoS 軽減)
-            max_length = 20000
-            if content and len(content) > max_length:
-                content = content[:max_length]
+            if content and len(content) > MAX_CONTENT_LENGTH:
+                content = content[:MAX_CONTENT_LENGTH]
             return content
     except requests.exceptions.RequestException as e:
         st.error(f"Failed to fetch content from the URL: {e}")
