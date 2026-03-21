@@ -10,6 +10,22 @@ YOUTUBE_ALLOWED_DOMAINS = {
     "m.youtube.com",
 }
 
+# 最大画像サイズ (MB)
+MAX_IMAGE_SIZE_MB = 5
+MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024
+
+
+def is_file_size_valid(file_size: int) -> bool:
+    """ファイルサイズが制限内であるかを確認する。
+
+    Args:
+        file_size: ファイルサイズ（バイト）
+
+    Returns:
+        bool: 制限内であればTrue、そうでなければFalse
+    """
+    return file_size <= MAX_IMAGE_SIZE_BYTES
+
 
 def validate_url(url):
     """URLを検証し、安全であれば解決済みIPアドレスを返す。
