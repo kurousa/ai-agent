@@ -1,5 +1,6 @@
 import ipaddress
 import socket
+from functools import lru_cache
 from urllib.parse import urlparse
 
 # YouTube で許可されるドメインのホワイトリスト
@@ -9,6 +10,12 @@ YOUTUBE_ALLOWED_DOMAINS = {
     "youtu.be",
     "m.youtube.com",
 }
+
+
+@lru_cache(maxsize=128)
+def _getaddrinfo_cached(hostname):
+    """Resolve hostname to IP addresses with caching."""
+    return socket.getaddrinfo(hostname, None)
 
 
 def validate_url(url):
@@ -36,7 +43,7 @@ def validate_url(url):
             return None
 
         # Resolve hostname to IP addresses and check each one
-        addr_info = socket.getaddrinfo(hostname, None)
+        addr_info = _getaddrinfo_cached(hostname)
         for _, _, _, _, sockaddr in addr_info:
             ip_addr = sockaddr[0]
             ip = ipaddress.ip_address(ip_addr)
@@ -85,7 +92,7 @@ def validate_youtube_url(url):
             return False
 
         # IPアドレスの安全性も確認
-        addr_info = socket.getaddrinfo(hostname, None)
+        addr_info = _getaddrinfo_cached(hostname)
         for _, _, _, _, sockaddr in addr_info:
             ip_addr = sockaddr[0]
             ip = ipaddress.ip_address(ip_addr)
