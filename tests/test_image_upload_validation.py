@@ -20,6 +20,7 @@ def test_is_file_size_valid_zero():
     """サイズ0に対してTrueを返すこと"""
     assert is_file_size_valid(0) is True
 
+
 if __name__ == "__main__":
     test_is_file_size_valid_under_limit()
     test_is_file_size_valid_at_limit()
