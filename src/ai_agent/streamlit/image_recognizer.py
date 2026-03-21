@@ -1,6 +1,7 @@
 import base64
 import streamlit as st
 from langchain_openai import ChatOpenAI
+from ai_agent.utils import is_file_size_valid, MAX_IMAGE_SIZE_MB
 
 try:
     from dotenv import load_dotenv
@@ -29,6 +30,10 @@ def main():
         type=["jpg", "jpeg", "png"],
     )
     if upload_file:
+        if not is_file_size_valid(upload_file.size):
+            st.error(f"The uploaded image exceeds the {MAX_IMAGE_SIZE_MB}MB limit.")
+            return
+
         if user_input := st.text_input("Enter a description of the image"):
             image_base64 = base64.b64encode(upload_file.read()).decode()
             image = f"data:image/jpeg;base64,{image_base64}"
