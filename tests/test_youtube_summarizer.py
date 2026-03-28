@@ -110,7 +110,9 @@ def test_get_content_error_handling(mock_validate_youtube_url):
 
     # Get the mocked streamlit and loader from MOCK_MODULES
     mock_st = MOCK_MODULES["streamlit"]
-    mock_loader_class = MOCK_MODULES["langchain_community.document_loaders"].YoutubeLoader
+    mock_loader_class = MOCK_MODULES[
+        "langchain_community.document_loaders"
+    ].YoutubeLoader
 
     # Setup the mock to raise an exception when load() is called
     mock_loader_instance = MagicMock()
@@ -122,4 +124,6 @@ def test_get_content_error_handling(mock_validate_youtube_url):
 
     # Verify results
     assert result is None
-    mock_st.error.assert_called_with("Failed to fetch content from the URL: Test exception")
+    mock_st.error.assert_called_with(
+        "Failed to fetch content from the URL: Test exception"
+    )
