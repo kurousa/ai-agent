@@ -54,13 +54,13 @@ def get_content(url):
         return None
 
     with st.spinner("Fetching content..."):
-        loader = YoutubeLoader.from_youtube_url(
-            url,
-            add_video_info=True,
-            language=["en", "ja"],
-        )
-        res = loader.load()
         try:
+            loader = YoutubeLoader.from_youtube_url(
+                url,
+                add_video_info=True,
+                language=["en", "ja"],
+            )
+            res = loader.load()
             if res:
                 content = res[0].page_content
                 title = res[0].metadata["title"]
