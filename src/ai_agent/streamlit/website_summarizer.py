@@ -167,7 +167,7 @@ def main():
             st.write_stream(chain.stream({"content": content}))
             st.markdown("---")
             st.markdown("## Original Content")
-            st.write(content)
+            st.text(content)
 
 
 if __name__ == "__main__":
