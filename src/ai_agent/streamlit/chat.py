@@ -38,8 +38,13 @@ GEMINI_PRICE_THRESHOLD_TOKENS = 128_000  # 128kトークン以上の場合、単
 
 
 def get_message_counts(text, encoding=None):
+    # キャッシュからトークン数を取得
+    cache_key = (st.session_state.model_name, text)
+    if cache_key in st.session_state.get("token_count_cache", {}):
+        return st.session_state.token_count_cache[cache_key]
+
     if "gemini" in st.session_state.model_name:
-        return st.session_state.llm.get_num_tokens(text)
+        count = st.session_state.llm.get_num_tokens(text)
     else:
         if encoding is None:
             if "gpt" in st.session_state.model_name:
@@ -50,7 +55,14 @@ def get_message_counts(text, encoding=None):
                     "cl100k_base"
                 )  # GPT models use cl100k_base encoding
                 print("警告: Claude トークンの計算は近似値です。")
-        return len(encoding.encode(text))
+        count = len(encoding.encode(text))
+
+    # キャッシュにトークン数を保存
+    if "token_count_cache" not in st.session_state:
+        st.session_state.token_count_cache = {}
+    st.session_state.token_count_cache[cache_key] = count
+
+    return count
 
 
 def calc_cost():
@@ -166,6 +178,7 @@ def init_messages():
         st.session_state.message_history = [
             ("system", "You are a helpful assistant."),
         ]
+        st.session_state.token_count_cache = {}
 
 
 def main():
