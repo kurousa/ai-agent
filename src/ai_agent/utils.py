@@ -3,6 +3,19 @@ import socket
 from functools import lru_cache
 from urllib.parse import urlparse
 
+try:
+    import streamlit as st
+    from langchain_openai import ChatOpenAI
+    from langchain_anthropic import ChatAnthropic
+    from langchain_google_genai import ChatGoogleGenerativeAI
+except ImportError:
+    import warnings
+
+    warnings.warn(
+        "Dependencies not found. Some functionality may be limited.",
+        ImportWarning,
+    )
+
 # YouTube で許可されるドメインのホワイトリスト
 YOUTUBE_ALLOWED_DOMAINS = {
     "www.youtube.com",
@@ -125,3 +138,41 @@ def validate_youtube_url(url):
         return True
     except (ValueError, socket.gaierror):
         return False
+
+
+def select_model():
+    """利用するLLMをサイドバーの選択状態によって切り替える"""
+    temperature = st.sidebar.slider(
+        "Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1
+    )
+    models = (
+        "Open AI GPT-3.5-turbo",
+        "Open AI GPT-4o",
+        "Claude 3.5 Haiku",
+        "Google Gemini 1.5 Flash",
+    )
+    model = st.sidebar.radio("Choose a model:", models)
+
+    match model:
+        case "Open AI GPT-3.5-turbo":
+            st.session_state.model_name = "gpt-3.5-turbo"
+            return ChatOpenAI(
+                model=st.session_state.model_name, temperature=temperature
+            )
+        case "Open AI GPT-4o":
+            st.session_state.model_name = "gpt-4o"
+            return ChatOpenAI(
+                model=st.session_state.model_name, temperature=temperature
+            )
+        case "Claude 3.5 Haiku":
+            st.session_state.model_name = "claude-3-5-haiku-20241022"
+            return ChatAnthropic(
+                model=st.session_state.model_name, temperature=temperature
+            )
+        case "Google Gemini 1.5 Flash":
+            st.session_state.model_name = "gemini-1.5-flash-latest"
+            return ChatGoogleGenerativeAI(
+                model=st.session_state.model_name, temperature=temperature
+            )
+        case _:
+            raise ValueError("Invalid model selected.")
