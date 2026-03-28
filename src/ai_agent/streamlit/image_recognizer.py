@@ -53,7 +53,7 @@ def main():
                 )
             ]
             st.markdown("### Question")
-            st.write(user_input)
+            st.text(user_input)
             st.image(upload_file)
             st.markdown("### Answer")
             st.write_stream(llm.stream(query))
