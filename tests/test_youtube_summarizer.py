@@ -101,3 +101,25 @@ def test_youtube_summarizer_prompt_structure(
     assert user_content == "{content}", (
         "User message should just be the content variable"
     )
+
+
+@patch.object(youtube_summarizer, "validate_youtube_url")
+def test_get_content_error_handling(mock_validate_youtube_url):
+    """get_content() handles exceptions from YoutubeLoader correctly."""
+    mock_validate_youtube_url.return_value = True
+
+    # Get the mocked streamlit and loader from MOCK_MODULES
+    mock_st = MOCK_MODULES["streamlit"]
+    mock_loader_class = MOCK_MODULES["langchain_community.document_loaders"].YoutubeLoader
+
+    # Setup the mock to raise an exception when load() is called
+    mock_loader_instance = MagicMock()
+    mock_loader_instance.load.side_effect = Exception("Test exception")
+    mock_loader_class.from_youtube_url.return_value = mock_loader_instance
+
+    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    result = youtube_summarizer.get_content(url)
+
+    # Verify results
+    assert result is None
+    mock_st.error.assert_called_with("Failed to fetch content from the URL: Test exception")
