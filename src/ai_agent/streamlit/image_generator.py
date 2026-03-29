@@ -98,7 +98,7 @@ def main():
 
     if dalle3_image_url:
         st.markdown("### Generated Image")
-        st.write(user_input)
+        st.text(user_input)
         st.image(upload_file, use_column_width="auto")
 
         st.markdown("### Generated Image by DALL-E 3")

@@ -3,13 +3,8 @@ import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# models
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
-from langchain_google_genai import ChatGoogleGenerativeAI
-
 from langchain_community.document_loaders import YoutubeLoader
-from ai_agent.utils import validate_youtube_url
+from ai_agent.utils import validate_youtube_url, select_model
 
 SYSTEM_PROMPT = """
 以下のコンテンツについて、内容を300文字程度で、できるだけわかりやすく要約してください。
@@ -25,44 +20,6 @@ def init_page():
     )
     st.title("Youtube▶️ Summarizer")
     st.sidebar.title("Options")
-
-
-def select_model():
-    """利用するLLMをサイドバーの選択状態によって切り替える"""
-    temperature = st.sidebar.slider(
-        "Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1
-    )
-    models = (
-        "Open AI GPT-3.5-turbo",
-        "Open AI GPT-4o",
-        "Claude 3.5 Haiku",
-        "Google Gemini 1.5 Flash",
-    )
-    model = st.sidebar.radio("Choose a model:", models)
-
-    match model:
-        case "Open AI GPT-3.5-turbo":
-            st.session_state.model_name = "gpt-3.5-turbo"
-            return ChatOpenAI(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        case "Open AI GPT-4o":
-            st.session_state.model_name = "gpt-4o"
-            return ChatOpenAI(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        case "Claude 3.5 Haiku":
-            st.session_state.model_name = "claude-3-5-haiku-20241022"
-            return ChatAnthropic(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        case "Google Gemini 1.5 Flash":
-            st.session_state.model_name = "gemini-1.5-flash-latest"
-            return ChatGoogleGenerativeAI(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        case _:
-            raise ValueError("Invalid model selected.")
 
 
 def init_chain():
@@ -97,13 +54,13 @@ def get_content(url):
         return None
 
     with st.spinner("Fetching content..."):
-        loader = YoutubeLoader.from_youtube_url(
-            url,
-            add_video_info=True,
-            language=["en", "ja"],
-        )
-        res = loader.load()
         try:
+            loader = YoutubeLoader.from_youtube_url(
+                url,
+                add_video_info=True,
+                language=["en", "ja"],
+            )
+            res = loader.load()
             if res:
                 content = res[0].page_content
                 title = res[0].metadata["title"]
@@ -132,7 +89,7 @@ def main():
             st.write_stream(chain.stream({"content": content}))
             st.markdown("---")
             st.markdown("## Original Content")
-            st.write(content)
+            st.text(content)
 
 
 if __name__ == "__main__":

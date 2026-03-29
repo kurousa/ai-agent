@@ -61,6 +61,8 @@ requires-dist = [
     { name = "pytube", specifier = "==15.0.0" },
     { name = "requests", specifier = "==2.33.0" },
     { name = "streamlit", specifier = "==1.33.0" },
+    { name = "requests", specifier = "==2.32.4" },
+    { name = "streamlit", specifier = "==1.54.0" },
     { name = "tiktoken", specifier = "==0.7.0" },
     { name = "youtube-transcript-api", specifier = "==0.6.2" },
 ]
@@ -2348,7 +2350,7 @@ wheels = [
 
 [[package]]
 name = "streamlit"
-version = "1.33.0"
+version = "1.54.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "altair" },
@@ -2364,16 +2366,15 @@ dependencies = [
     { name = "pyarrow" },
     { name = "pydeck" },
     { name = "requests" },
-    { name = "rich" },
     { name = "tenacity" },
     { name = "toml" },
     { name = "tornado" },
     { name = "typing-extensions" },
     { name = "watchdog", marker = "sys_platform != 'darwin'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/96/31/5bdc188349af837272356c144719274002b081a4fbdb6c38a5dfacf02a2e/streamlit-1.33.0.tar.gz", hash = "sha256:a8da8ff46f5b948c56d2dc7aca7a61cf8d995f4f21744cf82258ae75e63004ba", size = 7785220, upload-time = "2024-04-04T17:36:52.08Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/66/d887ee80ea85f035baee607c60af024994e17ae9b921277fca9675e76ecf/streamlit-1.54.0.tar.gz", hash = "sha256:09965e6ae7eb0357091725de1ce2a3f7e4be155c2464c505c40a3da77ab69dd8", size = 8662292, upload-time = "2026-02-04T16:37:54.734Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/f9/9ad1e6e33e4ae149aead1ee8062e536d060b50d650df710899805562910a/streamlit-1.33.0-py2.py3-none-any.whl", hash = "sha256:bfacb5d1edefcf803c2040b051a21b4c81317a9865448e6767d0a0c6aae7edae", size = 8139298, upload-time = "2024-04-04T17:36:47.669Z" },
+    { url = "https://files.pythonhosted.org/packages/48/1d/40de1819374b4f0507411a60f4d2de0d620a9b10c817de5925799132b6c9/streamlit-1.54.0-py3-none-any.whl", hash = "sha256:a7b67d6293a9f5f6b4d4c7acdbc4980d7d9f049e78e404125022ecb1712f79fc", size = 9119730, upload-time = "2026-02-04T16:37:52.199Z" },
 ]
 
 [[package]]

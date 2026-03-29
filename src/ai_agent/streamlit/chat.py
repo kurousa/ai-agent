@@ -1,10 +1,8 @@
 import tiktoken
 import streamlit as st
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from ai_agent.utils import select_model
 
 try:
     from dotenv import load_dotenv
@@ -38,8 +36,13 @@ GEMINI_PRICE_THRESHOLD_TOKENS = 128_000  # 128kトークン以上の場合、単
 
 
 def get_message_counts(text, encoding=None):
+    # キャッシュからトークン数を取得
+    cache_key = (st.session_state.model_name, text)
+    if cache_key in st.session_state.get("token_count_cache", {}):
+        return st.session_state.token_count_cache[cache_key]
+
     if "gemini" in st.session_state.model_name:
-        return st.session_state.llm.get_num_tokens(text)
+        count = st.session_state.llm.get_num_tokens(text)
     else:
         if encoding is None:
             if "gpt" in st.session_state.model_name:
@@ -50,7 +53,14 @@ def get_message_counts(text, encoding=None):
                     "cl100k_base"
                 )  # GPT models use cl100k_base encoding
                 print("警告: Claude トークンの計算は近似値です。")
-        return len(encoding.encode(text))
+        count = len(encoding.encode(text))
+
+    # キャッシュにトークン数を保存
+    if "token_count_cache" not in st.session_state:
+        st.session_state.token_count_cache = {}
+    st.session_state.token_count_cache[cache_key] = count
+
+    return count
 
 
 def calc_cost():
@@ -103,52 +113,6 @@ def display_cost(cost, output_cost, input_cost):
     st.sidebar.markdown(f"**Input Cost:** ${input_cost:.6f}")
 
 
-def select_model():
-    """利用するLLMをサイドバーの選択状態によって切り替える"""
-    temperature = st.sidebar.slider(
-        "Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1
-    )
-    models = (
-        "Open AI GPT-3.5-turbo",
-        "Open AI GPT-4o",
-        "Claude 3.5 Haiku",
-        # "Claude 3.7 Sonnet",
-        "Google Gemini 1.5 Flash",
-        # "Gemini 2.0 Flash"
-    )
-    model = st.sidebar.radio("Choose a model:", models)
-
-    match model:
-        case "Open AI GPT-3.5-turbo":
-            st.session_state.model_name = "gpt-3.5-turbo"
-            return ChatOpenAI(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        case "Open AI GPT-4o":
-            st.session_state.model_name = "gpt-4o"
-            return ChatOpenAI(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        case "Claude 3.5 Haiku":
-            st.session_state.model_name = "claude-3-5-haiku-20241022"
-            return ChatAnthropic(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        # case "Claude 3.7 Sonnet":
-        #     st.session_state.model_name = "claude-3-7-sonnet-20250219"
-        #     return ChatAnthropic(model=st.session_state.model_name, temperature=temperature)
-        case "Google Gemini 1.5 Flash":
-            st.session_state.model_name = "gemini-1.5-flash-latest"
-            return ChatGoogleGenerativeAI(
-                model=st.session_state.model_name, temperature=temperature
-            )
-        # case "Gemini 2.0 Flash":
-        #     st.session_state.model_name = "gemini-2.0-flash-latest"
-        #     return ChatGoogleGenerativeAI(model=st.session_state.model_name, temperature=temperature)
-        case _:
-            raise ValueError("Invalid model selected.")
-
-
 def init_page():
     """ページの基本設定"""
     st.set_page_config(
@@ -166,6 +130,7 @@ def init_messages():
         st.session_state.message_history = [
             ("system", "You are a helpful assistant."),
         ]
+        st.session_state.token_count_cache = {}
 
 
 def main():
