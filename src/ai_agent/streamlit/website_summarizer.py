@@ -104,7 +104,7 @@ def get_content(url, safe_ip):
         return None
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
-        logging.error(f"An unexpected error occurred: {e}")
+        logging.exception("An unexpected error occurred")
         return None
 
 
