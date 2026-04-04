@@ -116,7 +116,8 @@ def init_messages():
 def main():
     init_page()
     init_messages()
-    llm = select_model()
+    st.session_state.llm = select_model()
+    llm = st.session_state.llm
 
     prompt = ChatPromptTemplate.from_messages(
         [
