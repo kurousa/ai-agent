@@ -100,7 +100,7 @@ def get_content(url, safe_ip):
             return content
     except requests.exceptions.RequestException as e:
         st.error(f"Failed to fetch content from the URL: {e}")
-        logging.error(f"Failed to fetch content from the URL: {e}")
+        logging.exception("Failed to fetch content from the URL")
         return None
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
