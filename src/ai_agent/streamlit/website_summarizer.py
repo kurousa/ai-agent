@@ -1,4 +1,4 @@
-import traceback
+import logging
 import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -100,11 +100,11 @@ def get_content(url, safe_ip):
             return content
     except requests.exceptions.RequestException as e:
         st.error(f"Failed to fetch content from the URL: {e}")
-        print(traceback.format_exc())
+        logging.error(f"Failed to fetch content from the URL: {e}")
         return None
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
-        print(traceback.format_exc())
+        logging.error(f"An unexpected error occurred: {e}")
         return None
 
 
