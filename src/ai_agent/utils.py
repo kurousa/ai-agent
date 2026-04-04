@@ -106,36 +106,15 @@ def validate_youtube_url(url):
         bool: 検証成功時True、失敗時False
     """
     try:
+        # ドメインチェックを先に行い、不適切な場合は即座にFalseを返す
         result = urlparse(url)
-        if not all([result.scheme, result.netloc]):
-            return False
-        if result.scheme not in ["http", "https"]:
-            return False
-
         hostname = result.hostname
-        if not hostname:
+        if not hostname or hostname not in YOUTUBE_ALLOWED_DOMAINS:
             return False
 
-        # YouTube ドメインのホワイトリスト検証
-        if hostname not in YOUTUBE_ALLOWED_DOMAINS:
-            return False
-
-        # IPアドレスの安全性も確認
-        addr_info = _getaddrinfo_cached(hostname)
-        for _, _, _, _, sockaddr in addr_info:
-            ip_addr = sockaddr[0]
-            ip = ipaddress.ip_address(ip_addr)
-            if (
-                ip.is_private
-                or ip.is_loopback
-                or ip.is_link_local
-                or ip.is_unspecified
-                or ip.is_multicast
-                or ip.is_reserved
-            ):
-                return False
-
-        return True
+        # IPアドレスの安全性確認は共通のvalidate_urlに委譲する
+        # validate_urlは安全なIPアドレス（str）を返し、不安全な場合はNoneを返す
+        return validate_url(url) is not None
     except (ValueError, socket.gaierror):
         return False
 
