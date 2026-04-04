@@ -75,8 +75,6 @@ def test_get_message_counts_gemini():
     mock_llm.get_num_tokens.assert_called_once_with("test message")
 
 
-
-
 def test_get_message_counts_caching():
     """同じメッセージに対してget_message_countsが呼ばれた際、キャッシュが使用されることを確認"""
     mock_st.session_state.model_name = "gemini-1.5-flash-latest"
