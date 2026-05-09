@@ -74,6 +74,3 @@ exclude = [
     "venv",
 
 ]
-
-[tool.uv]
-allow-insecure-host = ["pypi.flatt.tech"]
